@@ -1261,16 +1261,28 @@ function changeQuantity(key, amount) {
 
     }
 
-
     const item =
         selected.get(key);
 
-    item.quantity += amount;
+
+    if (amount > 0) {
+
+        item.quantity =
+            Math.min(
+                500,
+                item.quantity + 10
+            );
+
+    } else {
+
+        item.quantity -= 10;
 
 
-    if (item.quantity <= 0) {
+        if (item.quantity < 10) {
 
-        selected.delete(key);
+            selected.delete(key);
+
+        }
 
     }
 
