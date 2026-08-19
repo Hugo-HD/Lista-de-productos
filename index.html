@@ -1275,7 +1275,8 @@ function changeQuantity(key, amount) {
 
     } else {
 
-        item.quantity -= 10;
+        item.quantity =
+            item.quantity - 10;
 
 
         if (item.quantity < 10) {
