@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#4f8f52">
+<title>Hay Day - Creador de Listados</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #eef4ec;
+    --card: #ffffff;
+    --text: #26352a;
+    --muted: #718077;
+    --border: #d9e4d8;
+    --green: #4f8f52;
+    --green-dark: #39713d;
+    --chip: #edf5ed;
+    --danger: #c44f4f;
+}
+
+body.dark {
+    --bg: #121813;
+    --card: #1d271f;
+    --text: #edf3ee;
+    --muted: #9ba99e;
+    --border: #344136;
+    --chip: #263328;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    transition: 0.2s;
+}
+
+header {
+    background: var(--green);
+    color: white;
+    padding: 22px 16px;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+h1 {
+    margin: 0 0 5px;
+    font-size: 25px;
+}
+
+header p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.theme-button {
+    border: 0;
+    background: rgba(255,255,255,0.18);
+    color: white;
+    border-radius: 10px;
+    padding: 10px 13px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 18px auto;
+    padding: 0 14px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1.6fr 0.8fr;
+    gap: 18px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.search {
+    display: flex;
+    gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 0 12px;
+    margin-bottom: 15px;
+}
+
+.search span {
+    padding-top: 12px;
+}
+
+.search input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: 16px;
+    padding: 12px 0;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 15px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+select {
+    width: 100%;
+    padding: 11px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+}
+
+.level-buttons {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+button {
+    font-family: inherit;
+}
+
+.level-mode,
+.secondary,
+.danger {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 9px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.level-mode.active {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    max-height: 110px;
+    overflow-y: auto;
+}
+
+.chip {
+    border: 1px solid var(--border);
+    background: var(--chip);
+    color: var(--text);
+    border-radius: 20px;
+    padding: 6px 9px;
+    cursor: pointer;
+}
+
+.chip.active {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+}
+
+.results-title {
+    display: flex;
+    justify-content: space-between;
+    margin: 14px 0 10px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 8px;
+}
+
+.product {
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.product-name {
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.product-meta {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.add {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--green);
+    color: white;
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.list-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 570px;
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+}
+
+.list-header h2 {
+    margin: 0 0 3px;
+    font-size: 20px;
+}
+
+.list-count {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.danger {
+    color: var(--danger);
+}
+
+.selected-list {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 420px;
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 60px 10px;
+}
+
+.selected-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.selected-name {
+    flex: 1;
+    font-weight: bold;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.quantity button {
+    width: 29px;
+    height: 29px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.remove {
+    border: 0;
+    background: transparent;
+    color: var(--danger);
+    cursor: pointer;
+}
+
+.output {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-top: 10px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    background: var(--card);
+    color: var(--text);
+    font-family: inherit;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 8px;
+}
+
+.primary {
+    flex: 1;
+    border: 0;
+    background: var(--green);
+    color: white;
+    border-radius: 9px;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.secondary {
+    flex: 1;
+}
+
+.status {
+    color: var(--muted);
+    font-size: 12px;
+    display: block;
+    min-height: 18px;
+    margin-top: 6px;
+}
+
+footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 10px 15px 25px;
+}
+
+@media(max-width: 850px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .list-card {
+        min-height: 500px;
+    }
+}
+
+@media(max-width: 600px) {
+    .filters {
+        grid-template-columns: 1fr;
+    }
+
+    .products {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media(max-width: 420px) {
+    .products {
+        grid-template-columns: 1fr;
+    }
+
+    h1 {
+        font-size: 21px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-content">
+        <div>
+            <h1>🌾 Hay Day - Creador de Listados</h1>
+            <p>Busca productos y crea tu lista fácilmente</p>
+        </div>
+
+        <button class="theme-button" onclick="toggleTheme()">☀️</button>
+    </div>
+</header>
+
+<div class="container">
+
+<div class="grid">
+
+<section class="card">
+
+    <div class="search">
+        <span>🔎</span>
+        <input
+            id="search"
+            type="search"
+            placeholder="Buscar comida..."
+            oninput="filterProducts()"
+        >
+    </div>
+
+    <div class="filters">
+
+        <div>
+            <label>🏭 Máquina</label>
+
+            <select id="machine" onchange="filterProducts()">
+                <option value="">Todas las máquinas</option>
+            </select>
+        </div>
+
+        <div>
+
+            <label>📊 Nivel</label>
+
+            <div class="level-buttons">
+
+                <button
+                    id="individualButton"
+                    class="level-mode active"
+                    onclick="setLevelMode('individual')">
+                    Individual
+                </button>
+
+                <button
+                    id="tenButton"
+                    class="level-mode"
+                    onclick="setLevelMode('ten')">
+                    De 10 en 10
+                </button>
+
+            </div>
+
+            <div id="levels" class="chips"></div>
+
+        </div>
+
+    </div>
+
+    <div class="results-title">
+        <strong id="resultCount">0 productos</strong>
+        <span>Pulse + para añadir</span>
+    </div>
+
+    <div id="products" class="products"></div>
+
+</section>
+
+
+<section class="card list-card">
+
+    <div class="list-header">
+
+        <div>
+            <h2>📋 Mi listado</h2>
+            <span id="listCount" class="list-count">
+                0 productos
+            </span>
+        </div>
+
+        <button class="danger" onclick="clearList()">
+            Vaciar
+        </button>
+
+    </div>
+
+    <div id="selectedList" class="selected-list">
+
+        <div class="empty">
+            Aún no has añadido productos.
+        </div>
+
+    </div>
+
+    <div class="output">
+
+        <textarea
+            id="output"
+            readonly
+            placeholder="Aquí aparecerá tu listado..."
+        ></textarea>
+
+        <div class="actions">
+
+            <button class="primary" onclick="copyList()">
+                📋 Copiar listado
+            </button>
+
+            <button class="secondary" onclick="saveList()">
+                💾 Guardar
+            </button>
+
+            <button class="secondary" onclick="loadList()">
+                ↩️ Cargar
+            </button>
+
+        </div>
+
+        <span id="status" class="status"></span>
+
+    </div>
+
+</section>
+
+</div>
+</div>
+
+<footer>
+    Herramienta independiente para crear listados de Hay Day.
+    No está afiliada a Supercell.
+</footer>
+
+
+<script>
+
+/*
+====================================================
+CATÁLOGO
+====================================================
+
+Cada producto tiene:
+
+name    = nombre
+machine = máquina
+level   = nivel de desbloqueo
+*/
+
+const products = [
+
+    // PANADERÍA
+
+    {
+        name: "Pan",
+        machine: "Panadería",
+        level: 2
+    },
+
+    {
+        name: "Galleta",
+        machine: "Panadería",
+        level: 2
+    },
+
+    {
+        name: "Pastel de zanahoria",
+        machine: "Panadería",
+        level: 21
+    },
+
+    {
+        name: "Pan de trigo integral",
+        machine: "Panadería",
+        level: 34
+    },
+
+    {
+        name: "Pan de patata",
+        machine: "Panadería",
+        level: 39
+    },
+
+
+    // LECHERÍA
+
+    {
+        name: "Nata",
+        machine: "Lechería",
+        level: 6
+    },
+
+    {
+        name: "Queso",
+        machine: "Lechería",
+        level: 6
+    },
+
+    {
+        name: "Mantequilla",
+        machine: "Lechería",
+        level: 6
+    },
+
+    {
+        name: "Queso de cabra",
+        machine: "Lechería",
+        level: 33
+    },
+
+
+    // AZUCARERA
+
+    {
+        name: "Azúcar moreno",
+        machine: "Azucarera",
+        level: 7
+    },
+
+    {
+        name: "Azúcar blanco",
+        machine: "Azucarera",
+        level: 7
+    },
+
+    {
+        name: "Jarabe",
+        machine: "Azucarera",
+        level: 18
+    },
+
+
+    // PALOMITERA
+
+    {
+        name: "Palomitas",
+        machine: "Palomitera",
+        level: 8
+    },
+
+    {
+        name: "Palomitas con mantequilla",
+        machine: "Palomitera",
+        level: 16
+    },
+
+    {
+        name: "Palomitas de chile",
+        machine: "Palomitera",
+        level: 40
+    },
+
+
+    // PARRILLA
+
+    {
+        name: "Hamburguesa",
+        machine: "Parrilla",
+        level: 15
+    },
+
+    {
+        name: "Hamburguesa con chile",
+        machine: "Parrilla",
+        level: 41
+    },
+
+    {
+        name: "Hamburguesa de pescado",
+        machine: "Parrilla",
+        level: 27
+    },
+
+    {
+        name: "Brocheta",
+        machine: "Parrilla",
+        level: 21
+    },
+
+
+    // HORNO DE TARTAS
+
+    {
+        name: "Pastel de manzana",
+        machine: "Horno de tartas",
+        level: 18
+    },
+
+    {
+        name: "Pastel de cereza",
+        machine: "Horno de tartas",
+        level: 24
+    },
+
+    {
+        name: "Pastel de nata",
+        machine: "Horno de tartas",
+        level: 34
+    },
+
+    {
+        name: "Pastel de calabaza",
+        machine: "Horno de tartas",
+        level: 15
+    },
+
+
+    // PASTELERÍA
+
+    {
+        name: "Pastel de chocolate",
+        machine: "Pastelería",
+        level: 21
+    },
+
+    {
+        name: "Pastel de fresa",
+        machine: "Pastelería",
+        level: 25
+    },
+
+
+    // SANDWICHERA
+
+    {
+        name: "Sándwich de queso",
+        machine: "Sandwichera",
+        level: 36
+    },
+
+    {
+        name: "Sándwich de pollo",
+        machine: "Sandwichera",
+        level: 61
+    },
+
+    {
+        name: "Sándwich de huevo",
+        machine: "Sandwichera",
+        level: 62
+    },
+
+
+    // BAR DE ENSALADAS
+
+    {
+        name: "Ensalada de frutas",
+        machine: "Bar de ensaladas",
+        level: 34
+    },
+
+    {
+        name: "Ensalada de col",
+        machine: "Bar de ensaladas",
+        level: 50
+    },
+
+    {
+        name: "Ensalada de pasta",
+        machine: "Bar de ensaladas",
+        level: 51
+    },
+
+
+    // SOPERA
+
+    {
+        name: "Sopa de tomate",
+        machine: "Sopera",
+        level: 42
+    },
+
+    {
+        name: "Sopa de pescado",
+        machine: "Sopera",
+        level: 46
+    },
+
+    {
+        name: "Sopa de calabaza",
+        machine: "Sopera",
+        level: 60
+    },
+
+
+    // MÁQUINA DE PASTA
+
+    {
+        name: "Pasta con huevo",
+        machine: "Máquina de pasta",
+        level: 57
+    },
+
+    {
+        name: "Pasta con salsa de tomate",
+        machine: "Máquina de pasta",
+        level: 67
+    },
+
+
+    // SUSHI BAR
+
+    {
+        name: "Sushi de salmón",
+        machine: "Sushi bar",
+        level: 56
+    },
+
+    {
+        name: "Sushi de gambas",
+        machine: "Sushi bar",
+        level: 58
+    },
+
+    {
+        name: "Sushi de huevo",
+        machine: "Sushi bar",
+        level: 60
+    }
+
+];
+
+
+/*
+====================================================
+VARIABLES
+====================================================
+*/
+
+let selected = new Map();
+
+let levelMode = "individual";
+
+let selectedLevel = null;
+
+
+/*
+====================================================
+INICIAR
+====================================================
+*/
+
+function init() {
+
+    createMachines();
+
+    createLevels();
+
+    filterProducts();
+
+    renderList();
+
+    if (localStorage.getItem("hayday-dark") === "true") {
+
+        document.body.classList.add("dark");
+
+        document.querySelector(".theme-button").textContent = "🌙";
+
+    }
+
+}
+
+
+/*
+====================================================
+MÁQUINAS
+====================================================
+*/
+
+function createMachines() {
+
+    const select = document.getElementById("machine");
+
+    const machines = [...new Set(
+        products.map(product => product.machine)
+    )].sort();
+
+    machines.forEach(machine => {
+
+        const option = document.createElement("option");
+
+        option.value = machine;
+
+        option.textContent = machine;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+/*
+====================================================
+NIVELES
+====================================================
+*/
+
+function createLevels() {
+
+    const container = document.getElementById("levels");
+
+    container.innerHTML = "";
+
+    const maxLevel = Math.max(
+        ...products.map(product => product.level)
+    );
+
+
+    if (levelMode === "individual") {
+
+        for (let level = 1; level <= maxLevel; level++) {
+
+            createLevelButton(
+                level,
+                String(level)
+            );
+
+        }
+
+    } else {
+
+        for (
+            let start = 1;
+            start <= maxLevel;
+            start += 10
+        ) {
+
+            const end = Math.min(
+                start + 9,
+                maxLevel
+            );
+
+            createLevelButton(
+                `${start}-${end}`,
+                `${start}-${end}`
+            );
+
+        }
+
+    }
+
+}
+
+
+/*
+====================================================
+BOTONES DE NIVEL
+====================================================
+*/
+
+function createLevelButton(text, value) {
+
+    const button = document.createElement("button");
+
+    button.className = "chip";
+
+    if (String(selectedLevel) === String(value)) {
+
+        button.classList.add("active");
+
+    }
+
+    button.textContent = text;
+
+    button.onclick = function() {
+
+        if (String(selectedLevel) === String(value)) {
+
+            selectedLevel = null;
+
+        } else {
+
+            selectedLevel = value;
+
+        }
+
+        createLevels();
+
+        filterProducts();
+
+    };
+
+    document.getElementById("levels").appendChild(button);
+
+}
+
+
+/*
+====================================================
+CAMBIAR MODO DE NIVEL
+====================================================
+*/
+
+function setLevelMode(mode) {
+
+    levelMode = mode;
+
+    selectedLevel = null;
+
+    document
+        .getElementById("individualButton")
+        .classList.toggle(
+            "active",
+            mode === "individual"
+        );
+
+    document
+        .getElementById("tenButton")
+        .classList.toggle(
+            "active",
+            mode === "ten"
+        );
+
+    createLevels();
+
+    filterProducts();
+
+}
+
+
+/*
+====================================================
+FILTRAR
+====================================================
+*/
+
+function filterProducts() {
+
+    const search = document
+        .getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const machine = document
+        .getElementById("machine")
+        .value;
+
+
+    let result = products.filter(product => {
+
+        const matchesSearch =
+            !search ||
+            product.name.toLowerCase().includes(search) ||
+            product.machine.toLowerCase().includes(search);
+
+        const matchesMachine =
+            !machine ||
+            product.machine === machine;
+
+
+        let matchesLevel = true;
+
+
+        if (selectedLevel !== null) {
+
+            if (levelMode === "individual") {
+
+                matchesLevel =
+                    product.level === Number(selectedLevel);
+
+            } else {
+
+                const parts =
+                    String(selectedLevel)
+                        .split("-")
+                        .map(Number);
+
+                matchesLevel =
+                    product.level >= parts[0] &&
+                    product.level <= parts[1];
+
+            }
+
+        }
+
+
+        return (
+            matchesSearch &&
+            matchesMachine &&
+            matchesLevel
+        );
+
+    });
+
+
+    result.sort((a,b) => {
+
+        if (a.level !== b.level) {
+
+            return a.level - b.level;
+
+        }
+
+        return a.name.localeCompare(
+            b.name,
+            "es"
+        );
+
+    });
+
+
+    document.getElementById(
+        "resultCount"
+    ).textContent =
+        result.length +
+        " producto" +
+        (result.length === 1 ? "" : "s");
+
+
+    renderProducts(result);
+
+}
+
+
+/*
+====================================================
+MOSTRAR PRODUCTOS
+====================================================
+*/
+
+function renderProducts(result) {
+
+    const container =
+        document.getElementById("products");
+
+    container.innerHTML = "";
+
+
+    if (result.length === 0) {
+
+        container.innerHTML =
+            '<div class="empty">No hay productos con estos filtros.</div>';
+
+        return;
+
+    }
+
+
+    result.forEach(product => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "product";
+
+
+        div.innerHTML = `
+
+            <div class="product-info">
+
+                <div class="product-name">
+                    ${escapeHTML(product.name)}
+                </div>
+
+                <div class="product-meta">
+                    Nivel ${product.level}
+                    ·
+                    ${escapeHTML(product.machine)}
+                </div>
+
+            </div>
+
+            <button class="add">
+                +
+            </button>
+
+        `;
+
+
+        div.querySelector(".add").onclick =
+            function() {
+
+                addProduct(product);
+
+            };
+
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/*
+====================================================
+AÑADIR PRODUCTO
+====================================================
+*/
+
+function productKey(product) {
+
+    return (
+        product.name +
+        "|" +
+        product.machine +
+        "|" +
+        product.level
+    );
+
+}
+
+
+function addProduct(product) {
+
+    const key =
+        productKey(product);
+
+
+    if (selected.has(key)) {
+
+        selected.get(key).quantity++;
+
+    } else {
+
+        selected.set(
+            key,
+            {
+                ...product,
+                quantity: 1
+            }
+        );
+
+    }
+
+
+    renderList();
+
+    updateOutput();
+
+}
+
+
+/*
+====================================================
+CAMBIAR CANTIDAD
+====================================================
+*/
+
+function changeQuantity(key, amount) {
+
+    if (!selected.has(key)) {
+
+        return;
+
+    }
+
+
+    const item =
+        selected.get(key);
+
+    item.quantity += amount;
+
+
+    if (item.quantity <= 0) {
+
+        selected.delete(key);
+
+    }
+
+
+    renderList();
+
+    updateOutput();
+
+}
+
+
+/*
+====================================================
+ELIMINAR
+====================================================
+*/
+
+function removeProduct(key) {
+
+    selected.delete(key);
+
+    renderList();
+
+    updateOutput();
+
+}
+
+
+/*
+====================================================
+MOSTRAR LISTADO
+====================================================
+*/
+
+function renderList() {
+
+    const container =
+        document.getElementById(
+            "selectedList"
+        );
+
+    container.innerHTML = "";
+
+
+    const items =
+        [...selected.values()]
+        .sort((a,b) => {
+
+            if (a.level !== b.level) {
+
+                return a.level - b.level;
+
+            }
+
+            return a.name.localeCompare(
+                b.name,
+                "es"
+            );
+
+        });
+
+
+    if (items.length === 0) {
+
+        container.innerHTML =
+            '<div class="empty">Aún no has añadido productos.</div>';
+
+    }
+
+
+    let total = 0;
+
+
+    items.forEach(item => {
+
+        total += item.quantity;
+
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "selected-item";
+
+
+        const key =
+            productKey(item);
+
+
+        div.innerHTML = `
+
+            <div class="selected-name">
+
+                ${escapeHTML(item.name)}
+
+                <span
+                    class="product-meta">
+                    · Nv. ${item.level}
+                </span>
+
+            </div>
+
+            <div class="quantity">
+
+                <button>−</button>
+
+                <strong>
+                    ${item.quantity}
+                </strong>
+
+                <button>+</button>
+
+            </div>
+
+            <button class="remove">
+                ✕
+            </button>
+
+        `;
+
+
+        const buttons =
+            div.querySelectorAll(
+                ".quantity button"
+            );
+
+
+        buttons[0].onclick =
+            () => changeQuantity(
+                key,
+                -1
+            );
+
+
+        buttons[1].onclick =
+            () => changeQuantity(
+                key,
+                1
+            );
+
+
+        div.querySelector(
+            ".remove"
+        ).onclick =
+            () => removeProduct(key);
+
+
+        container.appendChild(div);
+
+    });
+
+
+    document.getElementById(
+        "listCount"
+    ).textContent =
+        total +
+        " unidades · " +
+        items.length +
+        " tipos";
+
+}
+
+
+/*
+====================================================
+GENERAR TEXTO
+====================================================
+*/
+
+function updateOutput() {
+
+    const items =
+        [...selected.values()]
+        .sort((a,b) => {
+
+            if (a.level !== b.level) {
+
+                return a.level - b.level;
+
+            }
+
+            return a.name.localeCompare(
+                b.name,
+                "es"
+            );
+
+        });
+
+
+    document.getElementById(
+        "output"
+    ).value =
+        items
+        .map(item =>
+            item.quantity +
+            "x " +
+            item.name
+        )
+        .join("\n");
+
+}
+
+
+/*
+====================================================
+COPIAR
+====================================================
+*/
+
+async function copyList() {
+
+    const output =
+        document.getElementById(
+            "output"
+        );
+
+
+    if (!output.value) {
+
+        showStatus(
+            "El listado está vacío."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            output.value
+        );
+
+        showStatus(
+            "✅ ¡Listado copiado!"
+        );
+
+    } catch {
+
+        output.select();
+
+        document.execCommand(
+            "copy"
+        );
+
+        showStatus(
+            "✅ ¡Listado copiado!"
+        );
+
+    }
+
+}
+
+
+/*
+====================================================
+VACIAR
+====================================================
+*/
+
+function clearList() {
+
+    selected.clear();
+
+    renderList();
+
+    updateOutput();
+
+    showStatus(
+        "Listado vacío."
+    );
+
+}
+
+
+/*
+====================================================
+GUARDAR
+====================================================
+*/
+
+function saveList() {
+
+    localStorage.setItem(
+        "hayday-listado",
+        JSON.stringify(
+            [...selected.values()]
+        )
+    );
+
+    showStatus(
+        "💾 Listado guardado en este dispositivo."
+    );
+
+}
+
+
+/*
+====================================================
+CARGAR
+====================================================
+*/
+
+function loadList() {
+
+    const saved =
+        localStorage.getItem(
+            "hayday-listado"
+        );
+
+
+    if (!saved) {
+
+        showStatus(
+            "No hay ningún listado guardado."
+        );
+
+        return;
+
+    }
+
+
+    const items =
+        JSON.parse(saved);
+
+
+    selected = new Map();
+
+
+    items.forEach(item => {
+
+        selected.set(
+            productKey(item),
+            item
+        );
+
+    });
+
+
+    renderList();
+
+    updateOutput();
+
+    showStatus(
+        "↩️ Listado cargado."
+    );
+
+}
+
+
+/*
+====================================================
+MODO OSCURO
+====================================================
+*/
+
+function toggleTheme() {
+
+    document.body.classList.toggle(
+        "dark"
+    );
+
+
+    const dark =
+        document.body.classList.contains(
+            "dark"
+        );
+
+
+    localStorage.setItem(
+        "hayday-dark",
+        dark
+    );
+
+
+    document.querySelector(
+        ".theme-button"
+    ).textContent =
+        dark ? "🌙" : "☀️";
+
+}
+
+
+/*
+====================================================
+MENSAJE
+====================================================
+*/
+
+function showStatus(message) {
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    status.textContent =
+        message;
+
+
+    clearTimeout(
+        window.statusTimer
+    );
+
+
+    window.statusTimer =
+        setTimeout(
+            () => {
+                status.textContent = "";
+            },
+            2500
+        );
+
+}
+
+
+/*
+====================================================
+SEGURIDAD HTML
+====================================================
+*/
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(
+            /[&<>"']/g,
+            function(character) {
+
+                const entities = {
+
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+
+                };
+
+                return entities[character];
+
+            }
+        );
+
+}
+
+
+/*
+====================================================
+ARRANCAR
+====================================================
+*/
+
+init();
+
+</script>
+
+</body>
+</html>
