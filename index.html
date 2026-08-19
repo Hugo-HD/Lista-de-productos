@@ -1264,6 +1264,11 @@ function changeQuantity(key, amount) {
     const item =
         selected.get(key);
 
+    // Corregir cantidades antiguas
+    // para que siempre sean múltiplos de 10
+    if (item.quantity < 10) {
+        item.quantity = 10;
+    }
 
     if (amount > 0) {
 
@@ -1278,7 +1283,6 @@ function changeQuantity(key, amount) {
         item.quantity =
             item.quantity - 10;
 
-
         if (item.quantity < 10) {
 
             selected.delete(key);
@@ -1286,7 +1290,6 @@ function changeQuantity(key, amount) {
         }
 
     }
-
 
     renderList();
 
