@@ -1225,7 +1225,7 @@ function addProduct(product) {
 
     if (selected.has(key)) {
 
-        selected.get(key).quantity++;
+        selected.get(key).quantity = Math.min(500, selected.get(key).quantity + 10);
 
     } else {
 
@@ -1233,7 +1233,7 @@ function addProduct(product) {
             key,
             {
                 ...product,
-                quantity: 1
+                quantity: 10
             }
         );
 
